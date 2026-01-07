@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
 .Removes bloat from a fresh Windows build
 .DESCRIPTION
@@ -1090,96 +1090,96 @@ if ($version -like "*Windows 10*") {
 #                                           Windows CoPilot                                                #
 #                                                                                                          #
 ############################################################################################################
-$version = Get-CimInstance Win32_OperatingSystem | Select-Object -ExpandProperty Caption
-if ($version -like "*Windows 11*") {
-    write-output "Removing Windows Copilot"
-    # Define the registry key and value
-    $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot"
-    $propertyName = "TurnOffWindowsCopilot"
-    $propertyValue = 1
+# $version = Get-CimInstance Win32_OperatingSystem | Select-Object -ExpandProperty Caption
+# if ($version -like "*Windows 11*") {
+#     write-output "Removing Windows Copilot"
+#     # Define the registry key and value
+#     $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot"
+#     $propertyName = "TurnOffWindowsCopilot"
+#     $propertyValue = 1
 
-    # Check if the registry key exists
-    If (!(Test-Path $registryPath)) {
-        # If the registry key doesn't exist, create it
-        New-Item -Path $registryPath -Force | Out-Null
-    }
+#     # Check if the registry key exists
+#     If (!(Test-Path $registryPath)) {
+#         # If the registry key doesn't exist, create it
+#         New-Item -Path $registryPath -Force | Out-Null
+#     }
 
-    # Get the property value
-    $currentValue = Get-ItemProperty -Path $registryPath -Name $propertyName -ErrorAction SilentlyContinue
+#     # Get the property value
+#     $currentValue = Get-ItemProperty -Path $registryPath -Name $propertyName -ErrorAction SilentlyContinue
 
-    # Check if the property exists and if its value is different from the desired value
-    if ($null -eq $currentValue -or $currentValue.$propertyName -ne $propertyValue) {
-        # If the property doesn't exist or its value is different, set the property value
-        Set-ItemProperty -Path $registryPath -Name $propertyName -Value $propertyValue -Type DWord
-    }
-
-
-    ##Grab the default user as well
-    $registryPath = "Registry::HKEY_USERS\.DEFAULT\Software\Policies\Microsoft\Windows\WindowsCopilot"
-    $propertyName = "TurnOffWindowsCopilot"
-    $propertyValue = 1
-
-    # Check if the registry key exists
-    if (!(Test-Path $registryPath)) {
-        # If the registry key doesn't exist, create it
-        New-Item -Path $registryPath -Force | Out-Null
-    }
-
-    # Get the property value
-    $currentValue = Get-ItemProperty -Path $registryPath -Name $propertyName -ErrorAction SilentlyContinue
-
-    # Check if the property exists and if its value is different from the desired value
-    if ($null -eq $currentValue -or $currentValue.$propertyName -ne $propertyValue) {
-        # If the property doesn't exist or its value is different, set the property value
-        Set-ItemProperty -Path $registryPath -Name $propertyName -Value $propertyValue -Type DWord
-    }
+#     # Check if the property exists and if its value is different from the desired value
+#     if ($null -eq $currentValue -or $currentValue.$propertyName -ne $propertyValue) {
+#         # If the property doesn't exist or its value is different, set the property value
+#         Set-ItemProperty -Path $registryPath -Name $propertyName -Value $propertyValue -Type DWord
+#     }
 
 
-    ##Load the default hive from c:\users\Default\NTUSER.dat
-    reg load HKU\temphive "c:\users\default\ntuser.dat"
-    $registryPath = "registry::hku\temphive\Software\Policies\Microsoft\Windows\WindowsCopilot"
-    $propertyName = "TurnOffWindowsCopilot"
-    $propertyValue = 1
+#     ##Grab the default user as well
+#     $registryPath = "Registry::HKEY_USERS\.DEFAULT\Software\Policies\Microsoft\Windows\WindowsCopilot"
+#     $propertyName = "TurnOffWindowsCopilot"
+#     $propertyValue = 1
 
-    # Check if the registry key exists
-    if (!(Test-Path $registryPath)) {
-        # If the registry key doesn't exist, create it
-        [Microsoft.Win32.RegistryKey]$HKUCoPilot = [Microsoft.Win32.Registry]::Users.CreateSubKey("temphive\Software\Policies\Microsoft\Windows\WindowsCopilot", [Microsoft.Win32.RegistryKeyPermissionCheck]::ReadWriteSubTree)
-        $HKUCoPilot.SetValue($propertyName, $propertyValue, [Microsoft.Win32.RegistryValueKind]::DWord)
+#     # Check if the registry key exists
+#     if (!(Test-Path $registryPath)) {
+#         # If the registry key doesn't exist, create it
+#         New-Item -Path $registryPath -Force | Out-Null
+#     }
 
-        $HKUCoPilot.Flush()
-        $HKUCoPilot.Close()
-    }
+#     # Get the property value
+#     $currentValue = Get-ItemProperty -Path $registryPath -Name $propertyName -ErrorAction SilentlyContinue
 
-    [gc]::Collect()
-    [gc]::WaitForPendingFinalizers()
-    reg unload HKU\temphive
-
-
-    write-output "Removed"
+#     # Check if the property exists and if its value is different from the desired value
+#     if ($null -eq $currentValue -or $currentValue.$propertyName -ne $propertyValue) {
+#         # If the property doesn't exist or its value is different, set the property value
+#         Set-ItemProperty -Path $registryPath -Name $propertyName -Value $propertyValue -Type DWord
+#     }
 
 
-    foreach ($sid in $UserSIDs) {
-        $registryPath = "Registry::HKU\$sid\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot"
-        $propertyName = "TurnOffWindowsCopilot"
-        $propertyValue = 1
+#     ##Load the default hive from c:\users\Default\NTUSER.dat
+#     reg load HKU\temphive "c:\users\default\ntuser.dat"
+#     $registryPath = "registry::hku\temphive\Software\Policies\Microsoft\Windows\WindowsCopilot"
+#     $propertyName = "TurnOffWindowsCopilot"
+#     $propertyValue = 1
 
-        # Check if the registry key exists
-        if (!(Test-Path $registryPath)) {
-            # If the registry key doesn't exist, create it
-            New-Item -Path $registryPath -Force | Out-Null
-        }
+    # # Check if the registry key exists
+    # if (!(Test-Path $registryPath)) {
+    #     # If the registry key doesn't exist, create it
+    #     [Microsoft.Win32.RegistryKey]$HKUCoPilot = [Microsoft.Win32.Registry]::Users.CreateSubKey("temphive\Software\Policies\Microsoft\Windows\WindowsCopilot", [Microsoft.Win32.RegistryKeyPermissionCheck]::ReadWriteSubTree)
+    #     $HKUCoPilot.SetValue($propertyName, $propertyValue, [Microsoft.Win32.RegistryValueKind]::DWord)
 
-        # Get the property value
-        $currentValue = Get-ItemProperty -Path $registryPath -Name $propertyName -ErrorAction SilentlyContinue
+    #     $HKUCoPilot.Flush()
+    #     $HKUCoPilot.Close()
+    # }
 
-        # Check if the property exists and if its value is different from the desired value
-        if ($null -eq $currentValue -or $currentValue.$propertyName -ne $propertyValue) {
-            # If the property doesn't exist or its value is different, set the property value
-            Set-ItemProperty -Path $registryPath -Name $propertyName -Value $propertyValue
-        }
-    }
-}
+    # [gc]::Collect()
+    # [gc]::WaitForPendingFinalizers()
+    # reg unload HKU\temphive
+
+
+#     write-output "Removed"
+
+
+#     foreach ($sid in $UserSIDs) {
+#         $registryPath = "Registry::HKU\$sid\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot"
+#         $propertyName = "TurnOffWindowsCopilot"
+#         $propertyValue = 1
+
+#         # Check if the registry key exists
+#         if (!(Test-Path $registryPath)) {
+#             # If the registry key doesn't exist, create it
+#             New-Item -Path $registryPath -Force | Out-Null
+#         }
+
+#         # Get the property value
+#         $currentValue = Get-ItemProperty -Path $registryPath -Name $propertyName -ErrorAction SilentlyContinue
+
+#         # Check if the property exists and if its value is different from the desired value
+#         if ($null -eq $currentValue -or $currentValue.$propertyName -ne $propertyValue) {
+#             # If the property doesn't exist or its value is different, set the property value
+#             Set-ItemProperty -Path $registryPath -Name $propertyName -Value $propertyValue
+#         }
+#     }
+# }
 ############################################################################################################
 #                                              Remove Recall                                               #
 #                                                                                                          #
@@ -1282,7 +1282,7 @@ if ($version -like "*Windows 11*") {
 
     if ($nonAdminLoggedOn -eq $false) {
         MkDir -Path "C:\Users\Default\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState" -Force -ErrorAction SilentlyContinue | Out-Null
-        $starturl = "https://github.com/andrew-s-taylor/public/raw/main/De-Bloat/start2.bin"
+        $starturl = "https://github.com/mpejga/andrew-s-taylor-public/raw/deployment/De-Bloat/start2.bin"
         invoke-webrequest -uri $starturl -outfile "C:\Users\Default\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\Start2.bin"
     }
 }
@@ -1712,7 +1712,7 @@ if ($manufacturer -like "*HP*") {
 
     ##Remove HP Connect Optimizer if setup.exe exists
     if (test-path -Path 'C:\Program Files (x86)\InstallShield Installation Information\{6468C4A5-E47E-405F-B675-A70A70983EA6}\setup.exe') {
-        invoke-webrequest -uri "https://raw.githubusercontent.com/andrew-s-taylor/public/main/De-Bloat/HPConnOpt.iss" -outfile "C:\Windows\Temp\HPConnOpt.iss"
+        invoke-webrequest -uri "https://raw.githubusercontent.com/mpejga/andrew-s-taylor-public/deployment/De-Bloat/HPConnOpt.iss" -outfile "C:\Windows\Temp\HPConnOpt.iss"
 
         &'C:\Program Files (x86)\InstallShield Installation Information\{6468C4A5-E47E-405F-B675-A70A70983EA6}\setup.exe' @('-s', '-f1C:\Windows\Temp\HPConnOpt.iss')
     }
@@ -2687,7 +2687,7 @@ if ($mcafeeinstalled -eq "true") {
     ### Download McAfee Consumer Product Removal Tool ###
     write-output "Downloading McAfee Removal Tool"
     # Download Source
-    $URL = 'https://github.com/andrew-s-taylor/public/raw/main/De-Bloat/mcafeeclean.zip'
+    $URL = 'https://github.com/mpejga/andrew-s-taylor-public/raw/deployment/De-Bloat/mcafeeclean.zip'
 
     # Set Save Directory
     $destination = 'C:\ProgramData\Debloat\mcafee.zip'
@@ -2706,7 +2706,7 @@ if ($mcafeeinstalled -eq "true") {
     ### Download McAfee Consumer Product Removal Tool ###
     write-output "Downloading McAfee Removal Tool"
     # Download Source
-    $URL = 'https://github.com/andrew-s-taylor/public/raw/main/De-Bloat/mccleanup.zip'
+    $URL = 'https://github.com/mpejga/andrew-s-taylor-public/raw/deployment/De-Bloat/mccleanup.zip'
 
     # Set Save Directory
     $destination = 'C:\ProgramData\Debloat\mcafeenew.zip'
